@@ -1,0 +1,43 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group ='uk.co.imrichardcole'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'ch.qos.logback:logback-core:1.1.7'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
+    compile 'com.google.guava:guava:24.1-jre'
+    compile 'com.sparkjava:spark-core:2.7.2'
+    compile 'com.google.code.gson:gson:2.8.2'
+    compile 'org.apache.httpcomponents:httpclient:4.5.5'
+    compile 'org.influxdb:influxdb-java:2.10'
+
+    compile group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.11.422'
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.hamcrest:hamcrest-library:1.3'
+}
+
+artifacts {
+    archives jar
+}
+
+jar {
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+task copyJar(type: Copy, dependsOn: build) {
+    from "build/libs/phoenix-${version}.jar"
+    into 'src/main/docker'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.1'
+}
